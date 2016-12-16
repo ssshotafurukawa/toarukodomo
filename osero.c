@@ -9,8 +9,10 @@
 #define DEF 0
 #define BLANK 0
 
-int vertical[]={-1,0,1,-1,1,-1,0};
-int cross[]={-1,-1,-1,0,0,1,1};
+int vertical[]={-1,-1,-1,0,1,1,1,0};
+int cross[]={-1,0,1,1,1,0,-1,-1};
+int colt[MASME][MASME];
+
 
 //‰Šú‰»
 void init(int colt[][MASME])
@@ -41,83 +43,14 @@ void init(int colt[][MASME])
 	}
 	show(colt);
 }
-//”»’è”’
-int checoowhite(int colt[][MASME],int x,int y)
-{
-	int i,j,k,num=0;
-	
-	for(i=0;i<=6;i++)
-	{
-		if(colt[x+vertical[i]][y+cross[i]]==BLACK)
-		{
-			//printf("%d  %d\n",x+vertical[i],y+cross[i]);
-			for(j=1;j<=6;j++)
-			{
-				if(colt[x+vertical[i]*j][y+cross[i]*j]==WHITE)
-				{
-					//printf("%d   %d\n",x+vertical[i]*j,y+cross[i]*j);
-					for(k=0;colt[x][y]!=colt[x+vertical[i]*(j-k)][y+cross[i]*(j-k)];k++)
-					{
-						colt[x+vertical[i]*(j-k)][y+cross[i]*(j-k)]=WHITE;
-						//printf("%d  %d %d\n",j-k,vertical[i]*j-k,y+cross[i]*j-k);
-					}
-					num+=1;
-				}
-			}
-		}
-	}
-	if(num==1)
-	{
-		colt[x][y]=WHITE;
-		return SUC;
-	}
-	else
-	{
-		return DEF;
-		printf("‚±‚±‚É‚Í‚¨‚¯‚Ü‚¹‚ñ\n");
-	}
-}
-//”»’è•
-int checooblack(int colt[][MASME],int x,int y)
-{
-	int i,j,k,num=0;
-	
-	for(i=0;i<=6;i++)
-	{
-		if(colt[x+vertical[i]][y+cross[i]]==WHITE)
-		{
-			for(j=1;j<=6;j++)
-			{
-				if(colt[x+vertical[i]*j][y+cross[i]*j]==BLACK)
-				{
-					for(k=0;colt[x][y]!=colt[x+vertical[i]*(j-k)][y+cross[i]*(j-k)];k++)
-					{
-						colt[x+vertical[i]*(j-k)][y+cross[i]*(j-k)]=BLACK;
-					}
-					num+=1;
-				}
-			}
-		}
-	}
-	if(num==1)
-	{
-		colt[x][y]=BLACK;
-		return SUC;
-	}
-	else
-	{
-		return DEF;
-		printf("‚±‚±‚É‚Í‚¨‚¯‚Ü‚¹‚ñ\n");
-	}
-}
 //— •Ô‚µˆ—
 int show(int colt[][MASME])
 {
 	int i,j;
 	
-	for(i=1;i<=MASME;i++)
+	for(i=0;i<MASME;i++)
 	{
-		printf(" %d",i);
+		printf(" %d",i+1);
 	}
 	printf("\n");
 	for(i=1;i<=MASME;i++)
@@ -142,45 +75,96 @@ int show(int colt[][MASME])
 	}
 	
 }
+//”»’è”’
+void checkwhite(int colt[][MASME],int x,int y)
+{
+	int i,j,k,num=0,a,b;
 	
+	while(1)
+	{
+		for(i=0;i<8;i++)
+		{
+			if(colt[x+vertical[i]][y+cross[i]]==BLACK)
+			{
+				for(j=1;j<8;j++)
+				{
+					a=vertical[i]*j;
+					b=cross[i]*j;
+					if(colt[x+a][y+b]==WHITE)
+					{
+						for(k=0;colt[x][y]!=colt[x+vertical[i]*(j-k)][y+cross[i]*(j-k)];k++)
+						{
+							colt[x+vertical[i]*(j-k)][y+cross[i]*(j-k)]=WHITE;
+						}
+						num+=1;
+					}
+				}
+			}
+		}
+		if(num==1)
+		{
+			colt[x][y]=WHITE;
+			break;
+		}
+		else
+		{
+			printf("‚±‚±‚É‚Í‚¨‚¯‚Ü‚¹‚ñ\n");
+		}
+	}
+}
+//”»’è•
+void checkblack(int colt[][MASME],int x,int y)
+{
+	int i,j,k,num=0,a,b;
+	
+	while(1)
+	{
+		for(i=0;i<8;i++)
+		{
+			if(colt[x+vertical[i]][y+cross[i]]==WHITE)
+			{
+				for(j=1;j<8;j++)
+				{
+					a=vertical[i]*j;
+					b=cross[i]*j;
+					if(colt[x+a][y+b]==BLACK)
+					{
+						for(k=0;colt[x][y]!=colt[x+vertical[i]*(j-k)][y+cross[i]*(j-k)];k++)
+						{
+							colt[x+vertical[i]*(j-k)][y+cross[i]*(j-k)]=BLACK;
+						}
+						num+=1;
+					}
+				}
+			}
+		}
+		if(num==1)
+		{
+			colt[x][y]=BLACK;
+			break;
+		}
+		else
+		{
+			printf("‚±‚±‚É‚Í‚¨‚¯‚Ü‚¹‚ñ\n");
+		}
+	}
+}
 int main(void)
 {
-	
-	int i;
-	int numblack=0,numwhite=0;
-	int colt[MASME][MASME];
-	int x,y;
+	int i,x,y;
+	int flg=0;
 	
 	init(colt);
 	
 	for(i=1;i<=MASME*MASME/2;i++)
 	{
-		while(1)
-		{
-			scanf("%d%d",&x,&y);
-			//”»’è
-			numwhite=checoowhite(colt,x,y);
-			
-			if(numwhite==SUC)
-			{
-				break;
-			}
-		}
-		numwhite=0;
+		scanf("%d%d",&x,&y);
+		
+		flg^=1;
+		//”»’è•E”’
+		if(flg==0 ? checkwhite(colt,x,y):checkblack(colt,x,y))
+		
 		//— •Ô‚µˆ—
-		show(colt);
-		while(1)
-		{
-			scanf("%d%d",&x,&y);
-			//”»’è
-			numblack=checooblack(colt,x,y);
-			
-			if(numblack==SUC)
-			{
-				break;
-			}
-		}
-		numblack=0;
 		show(colt);
 	}
 	
