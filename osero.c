@@ -1,17 +1,15 @@
-/*オセロPRO partII*/
+/*オセロPRO partIII*/
 #include<stdio.h>
 
 #define WHITE 1
 #define BLACK 2
 #define BLANK 0
 #define MASME 8
-#define SUC 1
-#define DEF 0
-#define BLANK 0
 
 int vertical[]={-1,-1,-1,0,1,1,1,0};
 int cross[]={-1,0,1,1,1,0,-1,-1};
 int colt[MASME][MASME];
+int flg=0;
 
 
 //初期化
@@ -75,26 +73,39 @@ int show(int colt[][MASME])
 	}
 	
 }
-//判定白
-void checkwhite(int colt[][MASME],int x,int y)
+//判定
+void check(int colt[][MASME])
 {
-	int i,j,k,num=0,a,b;
+	int i,j,k,num=0,a,b,x,y;
+	int s,t;
+	char black[]="BLACK";
+	char white[]="WHITE";
+	
+	flg ^= 1;
+	
+	s = (flg==0) ? BLACK:WHITE;
+	t = (flg==0) ? WHITE:BLACK;
 	
 	while(1)
 	{
+		printf("%d",s);
+		printf("%d\n",t);
+		printf("%sの番：",flg==0?black:white);
+		scanf("%d%d",&x,&y);
+		
 		for(i=0;i<8;i++)
 		{
-			if(colt[x+vertical[i]][y+cross[i]]==BLACK)
+			if(colt[x+vertical[i]][y+cross[i]]==t)
 			{
 				for(j=1;j<8;j++)
 				{
 					a=vertical[i]*j;
 					b=cross[i]*j;
-					if(colt[x+a][y+b]==WHITE)
+					if(colt[x+a][y+b]==s)
 					{
 						for(k=0;colt[x][y]!=colt[x+vertical[i]*(j-k)][y+cross[i]*(j-k)];k++)
 						{
-							colt[x+vertical[i]*(j-k)][y+cross[i]*(j-k)]=WHITE;
+							colt[x+vertical[i]*(j-k)][y+cross[i]*(j-k)]=s;
 						}
 						num+=1;
 					}
@@ -103,7 +114,7 @@ void checkwhite(int colt[][MASME],int x,int y)
 		}
 		if(num==1)
 		{
-			colt[x][y]=WHITE;
+			colt[x][y]=s;
 			break;
 		}
 		else
@@ -112,60 +123,35 @@ void checkwhite(int colt[][MASME],int x,int y)
 		}
 	}
 }
-//判定黒
-void checkblack(int colt[][MASME],int x,int y)
+int finish(int colt[][MASME])
 {
-	int i,j,k,num=0,a,b;
+	int i,j,num=0;
 	
-	while(1)
+	for(i=0;i<MASME;i++)
 	{
-		for(i=0;i<8;i++)
+		for(j=0;j<MASME;j++)
 		{
-			if(colt[x+vertical[i]][y+cross[i]]==WHITE)
+			if(colt[i][j]==BLANK)
 			{
-				for(j=1;j<8;j++)
-				{
-					a=vertical[i]*j;
-					b=cross[i]*j;
-					if(colt[x+a][y+b]==BLACK)
-					{
-						for(k=0;colt[x][y]!=colt[x+vertical[i]*(j-k)][y+cross[i]*(j-k)];k++)
-						{
-							colt[x+vertical[i]*(j-k)][y+cross[i]*(j-k)]=BLACK;
-						}
-						num+=1;
-					}
-				}
+				num++;
 			}
 		}
-		if(num==1)
-		{
-			colt[x][y]=BLACK;
-			break;
-		}
-		else
-		{
-			printf("ここにはおけません\n");
-		}
 	}
+	return num;
 }
 int main(void)
 {
-	int i,x,y;
-	int flg=0;
-	
 	init(colt);
 	
-	for(i=1;i<=MASME*MASME/2;i++)
+	while(1)
 	{
-		scanf("%d%d",&x,&y);
-		
-		flg^=1;
-		//判定黒・白
-		if(flg==0 ? checkwhite(colt,x,y):checkblack(colt,x,y))
-		
-		//裏返し処理
+		check(colt);
 		show(colt);
+		
+		if(finish(colt)==0)
+		{
+			break;
+		}
 	}
 	
 	return 0;
